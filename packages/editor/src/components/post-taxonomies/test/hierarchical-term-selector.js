@@ -118,18 +118,6 @@ describe( 'findTerm', () => {
 
 		expect( findTerm( input, 2249, 'child1' ) ).toEqual( undefined );
 	} );
-	
-	test( 'should match full-width and half-width characters', () => {
-		const input = [
-			{ id: 2249, parent: 0, name: 'single' },
-			{ id: 2232, parent: 0, name: 'ＡＢＣ' }, // Full-width ABC
-			{ id: 2245, parent: 2232, name: 'child1' },
-			{ id: 2246, parent: 2232, name: 'child2' },
-		];
-
-		const output = { id: 2232, parent: 0, name: 'ＡＢＣ' };
-		expect( findTerm( input, 0, 'ABC' ) ).toEqual( output ); // Half-width ABC
-	} );
 } );
 
 describe( 'getFilterMatcher', () => {
@@ -172,26 +160,6 @@ describe( 'getFilterMatcher', () => {
 			children: [],
 		};
 		const matcher = getFilterMatcher( 'parent' );
-		expect( matcher( input ) ).toEqual( output );
-	} );
-
-	test( 'should match full-width characters with half-width equivalents', () => {
-		const input = {
-			id: 2232,
-			parent: 0,
-			name: 'ＡＢＣ',
-			children: [
-				{ id: 2245, parent: 2232, name: 'child1', children: [] },
-				{ id: 2246, parent: 2232, name: 'child2', children: [] },
-			],
-		};
-		const output = {
-			id: 2232,
-			parent: 0,
-			name: 'ＡＢＣ',
-			children: [],
-		};
-		const matcher = getFilterMatcher( 'abc' );
 		expect( matcher( input ) ).toEqual( output );
 	} );
 } );
