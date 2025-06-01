@@ -99,7 +99,7 @@ export function findTerm( terms, parent, name ) {
 		return (
 			( ( ! term.parent && ! parent ) ||
 				parseInt( term.parent ) === parseInt( parent ) ) &&
-			term.name.toLowerCase() === name.toLowerCase()
+			term.name.normalize( 'NFKC' ).toLowerCase() === name.normalize( 'NFKC' ).toLowerCase()
 		);
 	} );
 }
@@ -132,7 +132,7 @@ export function getFilterMatcher( filterValue ) {
 		// (i.e. some child matched at some point in the tree) then return it.
 		if (
 			-1 !==
-				term.name.toLowerCase().indexOf( filterValue.toLowerCase() ) ||
+				term.name.normalize( 'NFKC' ).toLowerCase().indexOf( filterValue.normalize( 'NFKC' ).toLowerCase() ) ||
 			term.children.length > 0
 		) {
 			return term;
