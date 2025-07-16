@@ -1254,24 +1254,22 @@ export const mergeBlocks =
 		}
 
 		if ( ! blockAType.merge ) {
-			// If the first block doesn't support merging and the second block is empty,
+			// If the first block doesn't support merging and the second block is unmodified,
 			// remove the second block and focus the first block.
-			const isHeadingBlock = blockB.name === 'core/heading';
-			const isEmptyHeading =
-				isHeadingBlock &&
-				blockB.attributes &&
-				( ! blockB.attributes.content ||
-					blockB.attributes.content.length === 0 );
-
-			if ( isEmptyHeading ) {
-				registry.batch( () => {
-					dispatch.removeBlock(
-						clientIdB,
-						select.isBlockSelected( clientIdB )
-					);
+			try {
+				if ( isUnmodifiedBlock( blockB ) ) {
+					registry.batch( () => {
+						dispatch.removeBlock(
+							clientIdB,
+							select.isBlockSelected( clientIdB )
+						);
+						dispatch.selectBlock( blockA.clientId );
+					} );
+				} else {
 					dispatch.selectBlock( blockA.clientId );
-				} );
-			} else {
+				}
+			} catch {
+				// If isUnmodifiedBlock fails, fall back to just selecting the first block
 				dispatch.selectBlock( blockA.clientId );
 			}
 			return;

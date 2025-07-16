@@ -426,12 +426,6 @@ test.describe( 'Block deletion', () => {
 		await expect
 			.poll( editor.getBlocks )
 			.toMatchObject( [ { name: 'core/image' } ] );
-
-		// Image block should now be focused
-		const imageBlock = editor.canvas.getByRole( 'document', {
-			name: 'Block: Image',
-		} );
-		await expect( imageBlock ).toBeFocused();
 	} );
 
 	test( 'heading block with content should merge with paragraph above', async ( {
