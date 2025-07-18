@@ -1255,7 +1255,24 @@ export const mergeBlocks =
 		}
 
 		if ( ! blockAType.merge ) {
-			dispatch.selectBlock( blockA.clientId );
+			// If the first block doesn't support merging and the second block is unmodified,
+			// remove the second block and focus the first block.
+			try {
+				if ( isUnmodifiedBlock( blockB ) ) {
+					registry.batch( () => {
+						dispatch.removeBlock(
+							clientIdB,
+							select.isBlockSelected( clientIdB )
+						);
+						dispatch.selectBlock( blockA.clientId );
+					} );
+				} else {
+					dispatch.selectBlock( blockA.clientId );
+				}
+			} catch {
+				// If isUnmodifiedBlock fails, fall back to just selecting the first block
+				dispatch.selectBlock( blockA.clientId );
+			}
 			return;
 		}
 
