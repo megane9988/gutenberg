@@ -11,6 +11,7 @@ import {
 } from '@wordpress/blocks';
 import { getCSSRules, getCSSValueFromRawStyle } from '@wordpress/style-engine';
 import { select } from '@wordpress/data';
+import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -817,10 +818,25 @@ export const getNodesWithStyles = (
 		if ( tree.styles?.elements?.[ name ] ) {
 			const elementStyles = tree.styles?.elements?.[ name ] ?? {};
 
-			// Special handling for text element with textIndent - use p + p selector
+			// Special handling for text element with textIndent
 			const finalSelector = selector as string;
 			let textIndentStyles = null;
 			if ( name === 'text' && elementStyles?.typography?.textIndent ) {
+				/**
+				 * translators: If the first paragraph should also be indented
+				 * (e.g. East Asian languages), enter 'include_first_paragraph'.
+				 * Otherwise, enter 'exclude_first_paragraph'.
+				 * Do not translate into your own language.
+				 */
+				const textIndentType = _x(
+					'exclude_first_paragraph',
+					'Text indent type. Do not translate!'
+				);
+				const textIndentSelector =
+					textIndentType === 'include_first_paragraph'
+						? 'p'
+						: 'p + p';
+
 				textIndentStyles = {
 					typography: {
 						textIndent: elementStyles.typography.textIndent,
@@ -845,10 +861,10 @@ export const getNodesWithStyles = (
 					} );
 				}
 
-				// Push textIndent with p + p selector
+				// Push textIndent with the locale-dependent selector
 				nodes.push( {
 					styles: textIndentStyles,
-					selector: 'p + p',
+					selector: textIndentSelector,
 					skipSelectorWrapper: true,
 				} );
 				return; // Skip the normal push below
