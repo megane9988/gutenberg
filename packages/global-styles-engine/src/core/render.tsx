@@ -824,13 +824,12 @@ export const getNodesWithStyles = (
 			if ( name === 'text' && elementStyles?.typography?.textIndent ) {
 				/**
 				 * translators: If the first paragraph should also be indented
-				 * (e.g. East Asian languages), enter 'include_first_paragraph'.
-				 * Otherwise, enter 'exclude_first_paragraph'.
-				 * Do not translate into your own language.
+				 * (e.g. East Asian languages), translate to 'include_first_paragraph'.
+				 * Otherwise, translate to 'exclude_first_paragraph'.
 				 */
 				const textIndentType = _x(
 					'exclude_first_paragraph',
-					'Text indent type. Do not translate!'
+					'Text indent type'
 				);
 				const textIndentSelector =
 					textIndentType === 'include_first_paragraph'
