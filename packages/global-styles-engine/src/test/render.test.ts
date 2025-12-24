@@ -19,6 +19,12 @@ jest.mock( '@wordpress/data', () => ( {
 	select: jest.fn(),
 } ) );
 
+// Mock WordPress i18n
+let mockTextIndentType = 'exclude_first_paragraph';
+jest.mock( '@wordpress/i18n', () => ( {
+	_x: jest.fn( () => mockTextIndentType ),
+} ) );
+
 // Mock WordPress blocks store
 jest.mock( '@wordpress/blocks', () => ( {
 	__EXPERIMENTAL_STYLE_PROPERTY: {
@@ -35,6 +41,7 @@ jest.mock( '@wordpress/blocks', () => ( {
 		h4: 'h4',
 		h5: 'h5',
 		h6: 'h6',
+		text: 'p',
 		button: '.wp-element-button',
 		caption: '.wp-element-caption',
 	},
@@ -52,6 +59,7 @@ const ELEMENTS = {
 	h4: 'h4',
 	h5: 'h5',
 	h6: 'h6',
+	text: 'p',
 	button: '.wp-element-button',
 	caption: '.wp-element-caption',
 };
@@ -787,6 +795,145 @@ describe( 'global styles renderer', () => {
 					hasLayoutSupport: false,
 				},
 			} );
+		} );
+	} );
+
+	describe( 'text indent selector', () => {
+		beforeEach( () => {
+			// Reset mock to default
+			mockTextIndentType = 'exclude_first_paragraph';
+		} );
+
+		it( 'should use p + p selector when text indent type is exclude_first_paragraph', () => {
+			mockTextIndentType = 'exclude_first_paragraph';
+			const tree: GlobalStylesConfig = {
+				styles: {
+					elements: {
+						text: {
+							typography: {
+								textIndent: '2em',
+							},
+						},
+					},
+				},
+			};
+
+			const nodes = getNodesWithStyles( tree, {} );
+			const textIndentNode = nodes.find(
+				( node ) => node.selector === 'p + p'
+			);
+
+			expect( textIndentNode ).toBeDefined();
+			expect( textIndentNode?.styles ).toEqual( {
+				typography: {
+					textIndent: '2em',
+				},
+			} );
+		} );
+
+		it( 'should use p selector when text indent type is include_first_paragraph', () => {
+			mockTextIndentType = 'include_first_paragraph';
+			const tree: GlobalStylesConfig = {
+				styles: {
+					elements: {
+						text: {
+							typography: {
+								textIndent: '2em',
+							},
+						},
+					},
+				},
+			};
+
+			const nodes = getNodesWithStyles( tree, {} );
+			const textIndentNode = nodes.find(
+				( node ) =>
+					node.selector === 'p' &&
+					node.styles?.typography?.textIndent === '2em'
+			);
+
+			expect( textIndentNode ).toBeDefined();
+			expect( textIndentNode?.styles ).toEqual( {
+				typography: {
+					textIndent: '2em',
+				},
+			} );
+		} );
+
+		it( 'should separate textIndent from other text element styles', () => {
+			mockTextIndentType = 'exclude_first_paragraph';
+			const tree: GlobalStylesConfig = {
+				styles: {
+					elements: {
+						text: {
+							typography: {
+								textIndent: '2em',
+								fontSize: '16px',
+							},
+							color: {
+								text: 'red',
+							},
+						},
+					},
+				},
+			};
+
+			const nodes = getNodesWithStyles( tree, {} );
+			const textIndentNode = nodes.find(
+				( node ) => node.selector === 'p + p'
+			);
+			const textElementNode = nodes.find(
+				( node ) =>
+					node.selector === 'p' &&
+					! node.styles?.typography?.textIndent
+			);
+
+			// Text indent should be on p + p selector
+			expect( textIndentNode ).toBeDefined();
+			expect( textIndentNode?.styles ).toEqual( {
+				typography: {
+					textIndent: '2em',
+				},
+			} );
+
+			// Other styles should be on p selector
+			expect( textElementNode ).toBeDefined();
+			expect( textElementNode?.styles?.typography?.fontSize ).toBe(
+				'16px'
+			);
+			expect( textElementNode?.styles?.color?.text ).toBe( 'red' );
+		} );
+
+		it( 'should not push node with empty typography object when textIndent is the only typography property', () => {
+			mockTextIndentType = 'exclude_first_paragraph';
+			const tree: GlobalStylesConfig = {
+				styles: {
+					elements: {
+						text: {
+							typography: {
+								textIndent: '2em',
+							},
+						},
+					},
+				},
+			};
+
+			const nodes = getNodesWithStyles( tree, {} );
+			const textIndentNode = nodes.find(
+				( node ) => node.selector === 'p + p'
+			);
+			const emptyTextElementNode = nodes.find(
+				( node ) =>
+					node.selector === 'p' &&
+					node.styles?.typography &&
+					Object.keys( node.styles.typography ).length === 0
+			);
+
+			// Text indent should be on p + p selector
+			expect( textIndentNode ).toBeDefined();
+
+			// Should not have a node with empty typography object
+			expect( emptyTextElementNode ).toBeUndefined();
 		} );
 	} );
 } );

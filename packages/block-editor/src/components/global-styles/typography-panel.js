@@ -584,7 +584,7 @@ export default function TypographyPanel( {
 						help={
 							isGlobalStyles
 								? __(
-										'Indents the first line of each paragraph after the first one.'
+										'Indents the first line of each paragraph.'
 								  )
 								: __( 'Indents the first line of text.' )
 						}
