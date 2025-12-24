@@ -847,6 +847,13 @@ export const getNodesWithStyles = (
 					const { textIndent, ...restTypography } =
 						stylesWithoutTextIndent.typography;
 					stylesWithoutTextIndent.typography = restTypography;
+					// Remove empty typography object
+					if (
+						Object.keys( stylesWithoutTextIndent.typography )
+							.length === 0
+					) {
+						delete stylesWithoutTextIndent.typography;
+					}
 				}
 
 				// Push the main styles with p selector (if there are any other styles)

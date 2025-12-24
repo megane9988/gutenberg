@@ -903,5 +903,37 @@ describe( 'global styles renderer', () => {
 			);
 			expect( textElementNode?.styles?.color?.text ).toBe( 'red' );
 		} );
+
+		it( 'should not push node with empty typography object when textIndent is the only typography property', () => {
+			mockTextIndentType = 'exclude_first_paragraph';
+			const tree: GlobalStylesConfig = {
+				styles: {
+					elements: {
+						text: {
+							typography: {
+								textIndent: '2em',
+							},
+						},
+					},
+				},
+			};
+
+			const nodes = getNodesWithStyles( tree, {} );
+			const textIndentNode = nodes.find(
+				( node ) => node.selector === 'p + p'
+			);
+			const emptyTextElementNode = nodes.find(
+				( node ) =>
+					node.selector === 'p' &&
+					node.styles?.typography &&
+					Object.keys( node.styles.typography ).length === 0
+			);
+
+			// Text indent should be on p + p selector
+			expect( textIndentNode ).toBeDefined();
+
+			// Should not have a node with empty typography object
+			expect( emptyTextElementNode ).toBeUndefined();
+		} );
 	} );
 } );
