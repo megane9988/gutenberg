@@ -14,6 +14,7 @@ import edit from './edit';
 import save from './save';
 import transforms from './transforms';
 import { unlock } from '../lock-unlock';
+import { NavigationLinkFieldControl } from '../navigation-link/shared';
 
 const { fieldsKey, formKey } = unlock( blocksPrivateApis );
 
@@ -61,25 +62,34 @@ if ( window.__experimentalContentOnlyInspectorFields ) {
 			id: 'label',
 			label: __( 'Label' ),
 			type: 'text',
-			Edit: 'rich-text', //TODO: replace with custom component
+			Edit: 'rich-text',
 		},
 		{
 			id: 'link',
 			label: __( 'Link' ),
 			type: 'url',
-			Edit: 'link', // TODO: replace with custom component
-			getValue: ( { item } ) => ( {
-				url: item.url,
-				rel: item.rel,
-			} ),
-			setValue: ( { value } ) => ( {
-				url: value.url,
-				rel: value.rel,
-			} ),
+			Edit: NavigationLinkFieldControl,
+			getValue: ( { item } ) => item,
+			setValue: ( { value } ) => value,
+		},
+		{
+			id: 'opensInNewTab',
+			label: __( 'Open in new tab' ),
+			type: 'boolean',
+		},
+		{
+			id: 'description',
+			label: __( 'Description' ),
+			type: 'text',
+		},
+		{
+			id: 'rel',
+			label: __( 'Rel attribute' ),
+			type: 'text',
 		},
 	];
 	settings[ formKey ] = {
-		fields: [ 'label', 'link' ],
+		fields: [ 'label', 'link', 'opensInNewTab', 'description', 'rel' ],
 	};
 }
 

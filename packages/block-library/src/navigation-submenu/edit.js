@@ -333,13 +333,15 @@ export default function NavigationSubmenuEdit( {
 					/>
 				</ToolbarGroup>
 			</BlockControls>
-			<InspectorControls>
-				<Controls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					clientId={ clientId }
-				/>
-			</InspectorControls>
+			{ ! window?.__experimentalContentOnlyInspectorFields && (
+				<InspectorControls>
+					<Controls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						clientId={ clientId }
+					/>
+				</InspectorControls>
+			) }
 			<div { ...blockProps }>
 				<ParentElement className="wp-block-navigation-item__content">
 					{ ! isInvalid && ! isDraft && (
