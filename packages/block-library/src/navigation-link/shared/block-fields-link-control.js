@@ -3,6 +3,7 @@
  */
 import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { privateApis as blockEditorPrivateApis } from '@wordpress/block-editor';
 
 /**
  * Internal dependencies
@@ -12,7 +13,6 @@ import { useHandleLinkChange } from './use-handle-link-change';
 import { useLinkPreview } from './use-link-preview';
 import { getSuggestionsQuery } from '../link-ui';
 import { unlock } from '../../lock-unlock';
-import { privateApis as blockEditorPrivateApis } from '@wordpress/block-editor';
 
 const { LinkPicker } = unlock( blockEditorPrivateApis );
 
@@ -27,11 +27,10 @@ const { LinkPicker } = unlock( blockEditorPrivateApis );
  *
  * @param {Object}   props          - Component props
  * @param {Object}   props.data     - Block attributes
- * @param {Object}   props.field    - Field definition from Block Fields
  * @param {Function} props.onChange - Callback to update block attributes
  * @param {Object}   props.config   - Configuration object with clientId
  */
-export function NavigationLinkFieldControl( { data, field, onChange, config } ) {
+export function NavigationLinkFieldControl( { data, onChange, config } ) {
 	const clientId = config?.clientId;
 
 	// Get entity binding information
