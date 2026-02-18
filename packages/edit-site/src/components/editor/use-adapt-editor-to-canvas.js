@@ -9,12 +9,8 @@ import { store as preferencesStore } from '@wordpress/preferences';
 
 export function useAdaptEditorToCanvas( canvas ) {
 	const { clearSelectedBlock } = useDispatch( blockEditorStore );
-	const {
-		setDeviceType,
-		closePublishSidebar,
-		setIsListViewOpened,
-		setIsInserterOpened,
-	} = useDispatch( editorStore );
+	const { closePublishSidebar, setIsListViewOpened, setIsInserterOpened } =
+		useDispatch( editorStore );
 	const { get: getPreference } = useSelect( preferencesStore );
 	const registry = useRegistry();
 	useLayoutEffect( () => {
@@ -22,7 +18,6 @@ export function useAdaptEditorToCanvas( canvas ) {
 			window.matchMedia( '(min-width: 782px)' ).matches;
 		registry.batch( () => {
 			clearSelectedBlock();
-			setDeviceType( 'Desktop' );
 			closePublishSidebar();
 			setIsInserterOpened( false );
 
@@ -44,7 +39,6 @@ export function useAdaptEditorToCanvas( canvas ) {
 		canvas,
 		registry,
 		clearSelectedBlock,
-		setDeviceType,
 		closePublishSidebar,
 		setIsInserterOpened,
 		setIsListViewOpened,
