@@ -17,6 +17,7 @@ import save from './save';
 import { enhanceNavigationLinkVariations } from './hooks';
 import transforms from './transforms';
 import { unlock } from '../lock-unlock';
+import { NavigationLinkFieldControl } from './shared';
 
 const { fieldsKey, formKey } = unlock( blocksPrivateApis );
 
@@ -105,15 +106,9 @@ if ( window.__experimentalContentOnlyInspectorFields ) {
 			id: 'link',
 			label: __( 'Link' ),
 			type: 'url',
-			Edit: 'link',
-			getValue: ( { item } ) => ( {
-				url: item.url,
-				rel: item.rel,
-			} ),
-			setValue: ( { value } ) => ( {
-				url: value.url,
-				rel: value.rel,
-			} ),
+			Edit: NavigationLinkFieldControl,
+			getValue: ( { item } ) => item,
+			setValue: ( { value } ) => value,
 		},
 	];
 	settings[ formKey ] = {

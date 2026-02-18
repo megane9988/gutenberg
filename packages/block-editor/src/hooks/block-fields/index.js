@@ -107,6 +107,7 @@ function BlockFields( {
 			// - rich-text control: it needs clientId
 			// - link control: does not need anything extra
 			// - media control: needs the Edit config
+			// - custom function components: wrapped to receive clientId via config
 			if (
 				'string' === typeof fieldDef.Edit &&
 				fieldDef.Edit === 'rich-text'
@@ -125,6 +126,11 @@ function BlockFields( {
 			) {
 				field.Edit = createConfiguredControl( Media, {
 					...fieldDef.Edit,
+				} );
+			} else if ( 'function' === typeof fieldDef.Edit ) {
+				// Wrap custom function Edit components to pass clientId via config
+				field.Edit = createConfiguredControl( fieldDef.Edit, {
+					clientId,
 				} );
 			}
 
