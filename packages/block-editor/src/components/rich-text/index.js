@@ -270,8 +270,12 @@ export function RichTextWrapper(
 	const shouldDisableEditing =
 		readOnly || disableBoundBlock || shouldDisableForPattern;
 
-	const { getSelectionStart, getSelectionEnd, getBlockRootClientId } =
-		useSelect( blockEditorStore );
+	const {
+		getSelectionStart,
+		getSelectionEnd,
+		getBlockRootClientId,
+		getBlockParents,
+	} = useSelect( blockEditorStore );
 	const { selectionChange } = useDispatch( blockEditorStore );
 	const adjustedAllowedFormats = getAllowedFormats( {
 		allowedFormats,
@@ -292,6 +296,27 @@ export function RichTextWrapper(
 					: instanceId,
 			};
 
+			// Helper function to check if two blocks are in the same hierarchy
+			const areBlocksInSameHierarchy = ( blockId1, blockId2 ) => {
+				if ( blockId1 === blockId2 ) {
+					return true;
+				}
+
+				const parents1 = getBlockParents( blockId1 );
+				const parents2 = getBlockParents( blockId2 );
+
+				// Check if one block is an ancestor of the other
+				return (
+					parents1.includes( blockId2 ) ||
+					parents2.includes( blockId1 ) ||
+					// Check if they share a common root parent
+					( parents1.length > 0 &&
+						parents2.length > 0 &&
+						parents1[ parents1.length - 1 ] ===
+							parents2[ parents2.length - 1 ] )
+				);
+			};
+
 			if ( typeof start === 'number' || unset ) {
 				// If we are only setting the start (or the end below), which
 				// means a partial selection, and we're not updating a selection
@@ -300,7 +325,11 @@ export function RichTextWrapper(
 				if (
 					end === undefined &&
 					getBlockRootClientId( clientId ) !==
-						getBlockRootClientId( getSelectionEnd().clientId )
+						getBlockRootClientId( getSelectionEnd().clientId ) &&
+					! areBlocksInSameHierarchy(
+						clientId,
+						getSelectionEnd().clientId
+					)
 				) {
 					return;
 				}
@@ -315,7 +344,11 @@ export function RichTextWrapper(
 				if (
 					start === undefined &&
 					getBlockRootClientId( clientId ) !==
-						getBlockRootClientId( getSelectionStart().clientId )
+						getBlockRootClientId( getSelectionStart().clientId ) &&
+					! areBlocksInSameHierarchy(
+						clientId,
+						getSelectionStart().clientId
+					)
 				) {
 					return;
 				}
@@ -331,6 +364,7 @@ export function RichTextWrapper(
 		[
 			clientId,
 			getBlockRootClientId,
+			getBlockParents,
 			getSelectionEnd,
 			getSelectionStart,
 			identifier,
